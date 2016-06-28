@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaScriptOOP", "JavaScriptOOP\JavaScriptOOP.csproj", "{D8C9AC6F-560D-4F95-84D4-32EBB57D0D65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaScriptOOP.Tests", "JavaScriptOOP.Tests\JavaScriptOOP.Tests.csproj", "{BEFC1301-6171-429E-A7B0-0356C9100545}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8C9AC6F-560D-4F95-84D4-32EBB57D0D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C9AC6F-560D-4F95-84D4-32EBB57D0D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C9AC6F-560D-4F95-84D4-32EBB57D0D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C9AC6F-560D-4F95-84D4-32EBB57D0D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEFC1301-6171-429E-A7B0-0356C9100545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEFC1301-6171-429E-A7B0-0356C9100545}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEFC1301-6171-429E-A7B0-0356C9100545}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEFC1301-6171-429E-A7B0-0356C9100545}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
