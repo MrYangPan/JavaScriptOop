@@ -870,8 +870,8 @@ var javaScriptOop = function () {
 
                 var Type = {};
                 for (var i = 0, type; type = ['String', 'Array', 'Number'][i++];) {
-                    (function(type) {
-                        Type['is' + type] = function(obj) {
+                    (function (type) {
+                        Type['is' + type] = function (obj) {
                             return Object.prototype.toString.call(obj) === '[object ' + type + ']';
                         }
                     })(type);
@@ -881,24 +881,247 @@ var javaScriptOop = function () {
 
             }
 
+            var example2 = function () {
 
+                //闭包可以帮助把一些不需要暴露在全局的变量封装成“私有变量”。假设有一个计算乘积的 简单函数:
+                var mult = function () {
+                    var a = 1;
+                    for (var i = 0, l = arguments.length; i < l; i++) {
+                        a = a * arguments[i];
+                    }
+                    return a;
+                };
+
+                //mult 函数接受一些 number 类型的参数，并返回这些参数的乘积。现在我们觉得对于那些相同 的参数来说，每次都进行计算是一种浪费，我们可以加入缓存机制来提高这个函数的性能： 
+                var mult2 = function () {
+                    var cache = {};
+                    var args = Array.prototype.join.call(arguments, ',');
+                    if (cache[args]) {
+                        return cache[args];
+                    }
+                    var a = 1;
+                    for (var i = 0, l = arguments.length; i < l; i++) {
+                        a = a * arguments[i];
+                    }
+                    return cache[args] = a;
+                };
+                //重构
+                var mult2Reconstruct = (function () {
+                    var cache = {};
+                    var calculate = function () { // 封闭 calculate 函数 
+                        var a = 1;
+                        for (var i = 0, l = arguments.length; i < l; i++) {
+                            a = a * arguments[i];
+                        }
+                        return a;
+                    };
+                    return function () {
+                        var args = Array.prototype.join.call(arguments, ',');
+                        if (args in cache) {
+                            return cache[args];
+                        }
+                        return cache[args] = calculate.apply(null, arguments);
+                    }
+                })();
+
+                //img 对象经常用于进行数据上报，如下所示： 
+                var report = function (src) {
+                    var img = new Image();
+                    img.src = src;
+                };
+                report('http://xxx.com/getUserInfo');
+
+                /*
+                但是通过查询后台的记录我们得知，因为一些低版本浏览器的实现存在 bug,
+                在这些浏览器 下使用 report 函数进行数据上报会丢失 30%左右的数据，也就是说，report 函数并不是每一次 都成功发起了 HTTP请求。
+                丢失数据的原因是 img 是 report 函数中的局部变量，当 report 函数的 调用结束后，img 局部变量随即被销毁，而此时或许还没来得及发出 HTTP请求，所以此次请求 就会丢失掉。 
+
+                现在我们把 img 变量用闭包封闭起来，便能解决请求丢失的问题：
+                */
+
+                var report2 = (function () {
+                    var imgs = [];
+                    return function (src) {
+                        var img = new Image();
+                        imgs.push(img);
+                        img.src = src;
+                    }
+                })();
+            }
+
+            //闭包和面向对象设计 
+            var example3 = function () {
+
+                /*
+                过程与数据的结合是形容面向对象中的“对象”时经常使用的表达。对象以方法的形式包含 了过程，而闭包则是在过程中以环境的形式包含了数据。通常用面向对象思想能实现的功能，用 闭包也能实现。反之亦然。
+                在 JavaScript 语言的祖先 Scheme 语言中，甚至都没有提供面向对象 的原生设计，但可以使用闭包来实现一个完整的面向对象系统
+                */
+
+                var example = function () {
+                    var extent = function () {
+                        var value = 0;
+                        return {
+                            call: function () {
+                                value++;
+                                console.log(value);
+                            }
+                        };
+                    }
+                    var extent = extent();
+                    extent.call();     // 输出：1 
+                    extent.call();     // 输出：2 
+                    extent.call();     // 输出：3 
+                }
+
+                //如果换成面向对象的写法，就是： 
+
+                var example2 = function () {
+                    var extent = {
+                        value: 0,
+                        call: function () {
+                            this.value++;
+                            console.log(this.value);
+                        }
+                    };
+                    extent.call();     // 输出：1 
+                    extent.call();     // 输出：2 
+                    extent.call();     // 输出：3 
+                }
+            }
+
+            /*
+            闭包是一个非常强大的特性，但人们对其也有诸多误解。一种耸人听闻的说法是闭包会造成 内存泄露，所以要尽量减少闭包的使用。 
+
+            局部变量本来应该在函数退出的时候被解除引用，但如果局部变量被封闭在闭包形成的环境 中，那么这个局部变量就能一直生存下去。从这个意义上看，闭包的确会使一些数据无法被及时 销毁。
+            使用闭包的一部分原因是我们选择主动把一些变量封闭在闭包中，因为可能在以后还需要 使用这些变量，把这些变量放在闭包中和放在全局作用域，对内存方面的影响是一致的，这里并 不能说成是内存泄露。
+            如果在将来需要回收这些变量，我们可以手动把这些变量设为 null。 
+
+            跟闭包和内存泄露有关系的地方是，使用闭包的同时比较容易形成循环引用，如果闭包的作 用域链中保存着一些 DOM节点，这时候就有可能造成内存泄露。但这本身并非闭包的问题，也 并非 JavaScript的问题。在 IE浏览器中，
+            由于 BOM和 DOM中的对象是使用 C++以 COM对象 的方式实现的，而 COM对象的垃圾收集机制采用的是引用计数策略。在基于引用计数策略的垃圾回收机制中，如果两个对象之间形成了循环引用，那么这两个对象都无法被回收，
+            但循环引用 造成的内存泄露在本质上也不是闭包造成的。 
+
+            同样，如果要解决循环引用带来的内存泄露问题，我们只需要把循环引用中的变量设为 null 即可。将变量设置为 null 意味着切断变量与它此前引用的值之间的连接。当垃圾收集器下次运 行时，就会删除这些值并回收它们占用的内存。 
+
+            */
 
         }
 
+        //高阶函数
+        var higherOrderFunctions = function () {
+
+            /*
+            高阶函数是指至少满足下列条件之一的函数。 
+                1.函数可以作为参数被传递
+                2.函数可以作为返回值输出
+            */
+
+            //函数作为参数传递 
+            var parameterPassing = function () {
+
+                //1.回调函数 
+                var callBackFunction = function () {
+                    return function () {
+                        var getUserInfo = function (userId, callback) {
+                            $.ajax('http://xxx.com/getUserInfo?' + userId, function (data) {
+                                if (typeof callback === 'function') {
+                                    callback(data);
+                                }
+                            });
+                        }
+                        getUserInfo(13157, function (data) {
+                            alert(data.userName);
+                        });
+                    }
+                }
+
+                //2. Array.prototype.sort 
+                var prototypeSort = function () {
+
+                    /*
+                    Array.prototype.sort 接受一个函数当作参数，这个函数里面封装了数组元素的排序规则。从 Array.prototype.sort 的使用可以看到，我们的目的是对数组进行排序，这是不变的部分；而使 用什么规则去排序，
+                    则是可变的部分。把可变的部分封装在函数参数里，动态传入 Array.prototype.sort，使 Array.prototype.sort 方法成为了一个非常灵活的方法，代码如下： 
+                    */
+
+                    return function () {
+                        [1, 4, 3].sort(function (a, b) {
+                            return a - b;
+                        });
+                        // 输出: [ 1, 3, 4 ] 
+                        [1, 4, 3].sort(function (a, b) {
+                            return b - a;
+                        });
+                        // 输出: [ 4, 3, 1 ] 
+                    }
+                }
+            }
+
+            //函数作为返回值输出 
+            var resurnValue = function () {
+
+                //相比把函数当作参数传递，函数当作返回值输出的应用场景也许更多，也更能体现函数式编程的巧妙。让函数继续返回一个可执行的函数，意味着运算过程是可延续的。 
+
+                //1. 判断数据的类型 
+                var example1 = function () {
+
+                    /*
+                    我们来看看这个例子，判断一个数据是否是数组，在以往的实现中，可以基于鸭子类型的概 念来判断，比如判断这个数据有没有 length 属性，有没有 sort 方法或者 slice 方法等。但更好 的方式是用 Object.prototype.toString 来计算。
+                    Object.prototype.toString.call( obj )返回一个 字符串，比如 Object.prototype.toString.call( [1,2,3] ) 总是返回"[object Array]" ，而 Object.prototype.toString.call( “str”)总是返回"[object String]"。
+                    所以我们可以编写一系列的 isType 函数。代码如下：
+                    */
+                    var isString = function (obj) { return Object.prototype.toString.call(obj) === '[object String]'; };
+                    var isArray = function (obj) { return Object.prototype.toString.call(obj) === '[object Array]'; };
+                    var isNumber = function (obj) { return Object.prototype.toString.call(obj) === '[object Number]'; };
+
+                    //重构之后：
+                    var reconstruct = function () {
+                        return function () {
+                            var isType = function (type) {
+                                return function (obj) {
+                                    return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+                                }
+                            };
+                            var isString = isType('String');
+                            var isArray = isType('Array');
+                            var isNumber = isType('Number');
+                            console.log(isArray([1, 2, 3]));     // 输出：true
+                        }
+                    }
+
+                    //我们还可以用循环语句，来批量注册这些 isType 函数： 
+                    var reconstruct2 = function () {
+                        var Type = {};
+                        for (var i = 0, type; type = ['String', 'Array', 'Number'][i++];) {
+                            (function (type) {
+                                Type['is' + type] = function (obj) {
+                                    return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+                                }
+                            })(type);
+                        };
+                        Type.isArray([]);     // 输出：true 
+                        Type.isString("str");     // 输出：true
+                    }
+                }
+
+                //2.单例模式
+                var getSingle = function () {
+
+                    var getSingle = function(fn) {
+                        var ret;
+                        return function() {
+                             return ret || (ret = fn.apply(this, arguments));
+                        };
+                    };
 
 
 
+                }
 
 
+            }
 
 
-
-
+        }
     }
-
-
-
-
 
 
 

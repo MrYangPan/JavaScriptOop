@@ -3,6 +3,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script src="~/Content/Scripts/JavaScriptOop/FirstPart.js"></script>
+
+
 <div class="jumbotron">
     <h1>ASP.NET</h1>
     <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
@@ -28,9 +31,29 @@
         function sub(a, b) {
             alert(a - b);
         }
-        add.call(sub, 3, 1);
+        //add.call(sub, 3, 1);
 
-       
+        var mult2Reconstruct = (function () {
+            var cache = {};
+            var calculate = function () { // 封闭 calculate 函数
+                var a = 1;
+                for (var i = 0, l = arguments.length; i < l; i++) {
+                    a = a * arguments[i];
+                }
+                return a;
+            };
+            return function () {
+                var args = Array.prototype.join.call(arguments, ',');
+                if (args in cache) {
+                    return cache[args];
+                }
+                return cache[args] = calculate.apply(null, arguments);
+            }
+        })();
+
+        var a1 = mult2Reconstruct(1, 2, 3);
+        var a2 = mult2Reconstruct(1, 2, 3);
+
 
     });
 
