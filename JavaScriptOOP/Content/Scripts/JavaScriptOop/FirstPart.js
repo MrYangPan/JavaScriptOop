@@ -796,8 +796,7 @@ var javaScriptOop = function () {
                         通过这段代码可以看到，Array.prototype.push 实际上是一个属性复制的过程，把参数按照 下标依次添加到被 push的对象上面，顺便修改了这个对象的 length 属性。至于被修改的对象是 谁，到底是数组还是类数组对象，这一点并不重要。 
                         由此可以推断，我们可以把“任意”对象传入 Array.prototype.push： 
                         */
-                        var example2 = function ()
-                        {
+                        var example2 = function () {
                             var a = {};
                             Array.prototype.push.call(a, 'first');
                             alert(a.length);    // 输出：1 
@@ -805,7 +804,7 @@ var javaScriptOop = function () {
 
                             //这段代码在绝大部分浏览器里都能顺利执行，但由于引擎的内部实现存在差异，如果在低版 本的 IE浏览器中执行，必须显式地给对象 a 设置 length 属性： 
                             var a = {
-                                 length: 0
+                                length: 0
                             };
                         }
                         /*
@@ -828,6 +827,72 @@ var javaScriptOop = function () {
     /// </summary>
     /// <returns></returns>
     var closureHigherOrderFunctions = function () {
+
+        /*
+        闭包的形成与 变量的作用域以及变量的生存周期密切相关;
+
+        变量的作用域：就是指变量的有效范围
+
+        变量的生存周期：对于全局变量来说，全局变量的生存周期当然是永久的，除非我们主动销毁这个全局变量。 而对于在函数内用 var 关键字声明的局部变量来说，当退出函数时，这些局部变量即失去了 它们的价值，
+        它们都会随着函数调用的结束而被销毁
+        */
+
+        //闭包
+        var closureFunction = function () {
+
+            /*
+            利用闭包我们可以完成许多奇妙的工作，下面介绍一个闭包的经典应用。假设页面上有 5个 div 节点，我们通过循环来给每个 div 绑定 onclick 事件，按照索引顺序，点击第 1个 div 时弹出 0，
+            点击第 2个 div 时弹出1，以此类推。代码如下：
+            */
+            var example = function () {
+                var nodes = document.getElementsByTagName('div');
+                for (var i = 0, len = nodes.length; i < len; i++) {
+                    nodes[i].onclick = function () {
+                        alert(i);
+                    }
+                };
+
+                /*
+                测试这段代码就会发现，无论点击哪个 div，最后弹出的结果都是 5。这是因为 div 节点的 onclick 事件是被异步触发的，当事件被触发的时候，for 循环早已结束，此时变量 i 的值已经是 5，
+                所以在 div 的 onclick 事件函数中顺着作用域链从内到外查找变量 i 时，查找到的值总是 5。 
+                解决方法是在闭包的帮助下，把每次循环的 i 值都封闭起来。当在事件函数中顺着作用域链 中从内到外查找变量 i 时，会先找到被封闭在闭包环境中的 i，如果有 5个 div，这里的 i 就分别 是 0,1,2,3,4： 
+                */
+
+                for (var i = 0, len = nodes.length; i < len; i++) {
+                    (function (i) {
+                        nodes[i].onclick = function () {
+                            console.log(i);
+                        }
+                    })(i);
+                };
+
+                //根据同样的道理，我们还可以编写如下一段代码
+
+                var Type = {};
+                for (var i = 0, type; type = ['String', 'Array', 'Number'][i++];) {
+                    (function(type) {
+                        Type['is' + type] = function(obj) {
+                            return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+                        }
+                    })(type);
+                };
+                Type.isArray([]);     // 输出：true 
+                Type.isString("str");     // 输出：true 
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
 
     }
 
