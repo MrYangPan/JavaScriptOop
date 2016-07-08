@@ -183,6 +183,9 @@
   <ItemGroup>
     <Content Include="Content\Css\bootstrap.css" />
     <Content Include="Content\Css\bootstrap.min.css" />
+    <Content Include="Content\Images\imageA.png" />
+    <Content Include="Content\Images\imageB.png" />
+    <Content Include="Content\Scripts\JavaScriptOop\DesignPatterns.js" />
     <Content Include="Content\Scripts\JavaScriptOop\FirstPart.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
