@@ -5,12 +5,30 @@
 
 <script src="~/Content/Scripts/JavaScriptOop/DesignPatterns.js"></script>
 
-<div style="position: absolute; background: blue; width: 100px; height: 100px;" id="div">我是 div</div>
+@*<div style="position: absolute; background: blue; width: 100px; height: 100px;" id="div">我是 div</div>*@
 
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+    <form action="" id="registerForm" method="post">
+
+        请输入用户名： <input type="text" name="userName" />
+        请输入密码： <input type="text" name="password" />
+        请输入手机号码： <input type="text" name="phoneNumber" />
+        <button>提交</button>
+
+
+    </form>
+</body>
+</html>
 
 <script>
 
     var obj = designPatterns.strategyMode();
-    var t= obj.example2();
-    t();
+    var t = obj.example2();
+
+
 </script>
