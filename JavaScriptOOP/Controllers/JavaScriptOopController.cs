@@ -21,5 +21,15 @@ namespace JavaScriptOOP.Controllers
         {
             return View();
         }
+
+
+        /// <summary>
+        /// 设计模式
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DesignPatterns()
+        {
+            return View();
+        }
     }
 }

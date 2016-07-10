@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "DesignPatterns";
+}
+@Scripts.Render("~/bundles/jquery")
+
+<script src="~/Content/Scripts/JavaScriptOop/DesignPatterns.js"></script>
+
+<div style="position: absolute; background: blue; width: 100px; height: 100px;" id="div">我是 div</div>
+
+
+<script>
+
+    var obj = designPatterns.strategyMode();
+    var t= obj.example2();
+    t();
+</script>
