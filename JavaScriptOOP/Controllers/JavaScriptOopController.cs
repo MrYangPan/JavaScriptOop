@@ -31,5 +31,17 @@ namespace JavaScriptOOP.Controllers
         {
             return View();
         }
+
+        #region 加强理解的知识点
+
+        public ActionResult ThisCallApply()
+        {
+            return View();
+        }
+
+
+
+
+        #endregion
     }
 }

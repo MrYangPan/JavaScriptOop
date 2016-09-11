@@ -187,6 +187,7 @@
     <Content Include="Content\Images\imageB.png" />
     <Content Include="Content\Scripts\JavaScriptOop\DesignPatterns.js" />
     <Content Include="Content\Scripts\JavaScriptOop\FirstPart.js" />
+    <Content Include="Content\Scripts\JavaScriptOop\ImportantKnowledge.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -241,6 +242,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\JavaScriptOop\Index.cshtml" />
     <Content Include="Views\JavaScriptOop\DesignPatterns.cshtml" />
+    <Content Include="Views\JavaScriptOop\ThisCallApply.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
