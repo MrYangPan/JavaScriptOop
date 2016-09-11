@@ -157,7 +157,7 @@ var designPatterns = function () {
         //原始验证
         var originalValidate = function () {
             var registerForm = document.getElementById('registerForm');
-            registerForm.onsubmit = function() {
+            registerForm.onsubmit = function () {
                 if (registerForm.userName.value === '') {
                     alert(' 用户名不能为空');
                     return false;
@@ -183,7 +183,7 @@ var designPatterns = function () {
                         return errorMsg;
                     }
                 },
-                minLength: function(value, length, errorMsg) { // 限制最小长度
+                minLength: function (value, length, errorMsg) { // 限制最小长度
                     if (value.length < length) {
                         return errorMsg;
                     }
@@ -207,7 +207,7 @@ var designPatterns = function () {
                     return strategies[strategy].apply(dom, ary);
                 });
             };
-            Validator.prototype.start = function() {
+            Validator.prototype.start = function () {
                 for (var i = 0, validatorFunc; validatorFunc === this.cache[i++];) {
                     var msg = validatorFunc(); // 开始校验，并取得校验后的返回信息
                     if (msg) { // 如果有确切的返回值，说明校验没有通过
@@ -264,13 +264,13 @@ var designPatterns = function () {
             var Validator = function () {
                 this.cache = [];
             };
-            Validator.prototype.add = function(dom, rules) {
+            Validator.prototype.add = function (dom, rules) {
                 var self = this;
                 for (var i = 0, rule; rule = rules[i++];) {
-                    (function(rule) {
+                    (function (rule) {
                         var strategyAry = rule.strategy.split(':');
                         var errorMsg = rule.errorMsg;
-                        self.cache.push(function() {
+                        self.cache.push(function () {
                             var strategy = strategyAry.shift();
                             strategyAry.unshift(dom.value);
                             strategyAry.push(errorMsg);
@@ -279,7 +279,7 @@ var designPatterns = function () {
                     })(rule);
                 }
             };
-            Validator.prototype.start = function() {
+            Validator.prototype.start = function () {
                 for (var i = 0, validatorFunc; validatorFunc = this.cache[i++];) {
                     var errorMsg = validatorFunc();
                     if (errorMsg) {
@@ -290,7 +290,7 @@ var designPatterns = function () {
 
             var validate = function () {
                 var registerForm = document.getElementById('registerForm');
-                var validataFunc = function() {
+                var validataFunc = function () {
                     var validator = new Validator();
                     validator.add(registerForm.userName, [{
                         strategy: 'isNonEmpty',
@@ -310,7 +310,7 @@ var designPatterns = function () {
                     var errorMsg = validator.start();
                     return errorMsg;
                 };
-                registerForm.onsubmit = function() {
+                registerForm.onsubmit = function () {
                     var errorMsg = validataFunc();
                     if (errorMsg) {
                         alert(errorMsg);
@@ -325,7 +325,132 @@ var designPatterns = function () {
         return { example2: example2 };
     }
 
+    //代理模式
+    var proxy = function () {
 
+        //图片加载
+        var example = function () {
+            var myImage = (function () {
+                var imgNode = document.createElement('img');
+                document.body.appendChild(imgNode);
+                return {
+                    setSrc: function (src) {
+                        imgNode.src = src;
+                    }
+                }
+            })();
+            myImage.setSrc('http:// imgcache.qq.com/music/photo/k/000GGDys0yA0Nk.jpg');
+        }
+
+        //虚拟代理实现图片预加载 
+        var example1 = function () {
+
+            var myImage = (function () {
+                var imgNode = document.createElement('img');
+                document.body.appendChild(imgNode);
+                return {
+                    setSrc: function (src) {
+                        imgNode.src = src;
+                    }
+                }
+            })();
+            var proxyImage = (function () {
+                var img = new Image;
+                img.onload = function () {
+                    myImage.setSrc(this.src);
+                }
+                return {
+                    setSrc: function (src) {
+                        myImage.setSrc('file:// /C:/Users/svenzeng/Desktop/loading.gif');
+                        img.src = src;
+                    }
+                }
+            })();
+            proxyImage.setSrc('http:// imgcache.qq.com/music/photo/k/000GGDys0yA0Nk.jpg');
+        }
+
+        //代理和本体接口的一致性 
+        var example2 = function () {
+            var myImage = (function () {
+                var imgNode = document.createElement('img');
+                document.body.appendChild(imgNode);
+                return function (src) {
+                    imgNode.src = src;
+                }
+            })();
+            var proxyImage = (function () {
+                var img = new Image;
+                img.onload = function () {
+                    myImage(this.src);
+                }
+                return function (src) {
+                    myImage('file:// /C:/Users/svenzeng/Desktop/loading.gif');
+                    img.src = src;
+                }
+            });
+            proxyImage('http:// imgcache.qq.com/music// N/k/000GGDys0yA0Nk.jpg');
+        }
+
+        //缓存代理
+        var example3 = function () {
+            //缓存代理的例子——计算乘积 
+            var mult = function () {
+                console.log('开始计算乘积');
+                var a = 1;
+                for (var i = 0, l = arguments.length; i < l; i++) {
+                    a = a * arguments[i];
+                }
+                return a;
+            };
+            var proxyMult = (function () {
+                var cache = {};
+                return function () {
+                    var args = Array.prototype.join.call(arguments, ',');
+                    if (args in cache) {
+                        return cache[args];
+                    }
+                    return cache[args] =
+                        mult.apply(this, arguments);
+                }
+            })();
+            mult(2, 3);    // 输出：6 
+            mult(2, 3, 4);    // 输出：24 
+        }
+
+        //用高阶函数动态创建代理
+
+    }
+
+    //迭代器模式
+    var iterator = function () {
+
+        /*迭代器模式是指提供一种方法顺序访问一个聚合对象中的各个元素，而又不需要暴露该对象 的内部表示。迭代器模式可以把迭代的过程从业务逻辑中分离出来，在使用迭代器模式之后，
+        即 使不关心对象的内部构造，也可以按顺序访问其中的每个元素
+        */
+
+        //Jquery中的$.each 函数
+        $.each([1, 2, 3], function (i, n) {
+            console.log('当前下标为： ' + i); console.log('当前值为:' + n);
+        });
+
+        //自己实现
+        var each = function (ary, callback) {
+            for (var i = 0, l = ary.length; i < l; i++) {
+                callback.call(ary[i], i, ary[i]);  // 把下标和元素当作参数传给 callback 函数    
+            }
+        };
+        each([1, 2, 3], function (i, n) {
+            alert([i, n]);
+        });
+
+
+
+
+
+
+    }
+
+    //测试
     return { strategyMode: strategyMode };
 
 
